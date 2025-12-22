@@ -1,0 +1,160 @@
+:root {
+  --bg: #121212;
+  --card: #1e1e1e;
+  --text: #eee;
+  --accent: #4c8dff;
+  --border: #333;
+  --danger: #e53935;
+}
+
+body.light {
+  --bg: #f4f6f8;
+  --card: #ffffff;
+  --text: #111;
+  --accent: #0066ff;
+  --border: #ddd;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  padding: 20px;
+
+  /* 👇 Tell browser we want dark UI controls */
+  color-scheme: dark;
+}
+
+body.light {
+  color-scheme: light;
+}
+
+.card {
+  max-width: 420px;
+  margin: auto;
+  background: var(--card);
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+h2 {
+  font-size: 0.95rem;
+  margin-top: 18px;
+}
+
+.programmes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+button {
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+}
+
+button.active {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+button.primary {
+  width: 100%;
+  margin-top: 15px;
+  background: var(--accent);
+  color: white;
+  border: none;
+}
+
+button.secondary {
+  width: 100%;
+  margin-top: 10px;
+  opacity: 0.85;
+}
+
+button.danger {
+  width: 100%;
+  margin-top: 12px;
+  background: var(--danger);
+  color: white;
+  border: none;
+}
+
+.programme-info {
+  margin-top: 8px;
+  font-size: 0.85rem;
+}
+
+.programme-info .duration {
+  color: #9aa4b2;
+}
+
+.programme-info .warning {
+  color: #ff6b6b;
+}
+
+.finish-row {
+  display: flex;
+  gap: 8px;
+}
+
+.finish-row input {
+  flex: 1;
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.quick-delays button {
+  padding: 8px;
+  font-size: 0.8rem;
+}
+
+.result {
+  margin-top: 15px;
+  font-weight: 600;
+  white-space: pre-line;
+}
+
+.notify {
+  display: flex;
+  gap: 8px;
+  margin-top: 15px;
+}
+
+.notify button {
+  flex: 1;
+}
+
+.notif-status {
+  margin-top: 12px;
+  font-size: 0.85rem;
+}
+
+.notif-status div {
+  margin-bottom: 4px;
+}
+
+.notif-status .success {
+  color: #4caf50;
+}
+
+.notif-status .warning {
+  color: #ffb74d;
+}
