@@ -1,5 +1,18 @@
-self.addEventListener('install', () => self.skipWaiting());
+self.addEventListener('install', e => {
+  e.waitUntil(
+    caches.open('wash-timer').then(c =>
+      c.addAll([
+        '/',
+        '/index.html',
+        '/style.css',
+        '/app.js',
+        '/manifest.json'
+      ])
+    )
+  );
+  self.skipWaiting();
+});
 
-self.addEventListener('notificationclick', e => {
-  e.notification.close();
+self.addEventListener('fetch', e => {
+  e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)));
 });
