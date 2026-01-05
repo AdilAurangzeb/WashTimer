@@ -1,98 +1,118 @@
 let cycleMinutes = null;
-let programmeId = null;
-let baseFinishTime = null;
+let programmeBtn = null;
+let immediateFinish = null;
 
-let scheduled = { start: null, end: null, wet: null };
-
+/* Format duration */
 function formatDuration(mins) {
   const h = Math.floor(mins / 60);
   const m = mins % 60;
   return `${h}h ${m}m`;
 }
 
-function setImmediate(mins) {
-  const now = dayjs();
-  baseFinishTime = now.add(mins, 'minute');
-  scheduled.end = baseFinishTime;
-  scheduled.start = now;
-  scheduled.wet = baseFinishTime.add(30, 'minute');
-  renderTimes();
-}
-
-function renderTimes() {
-  document.getElementById('finishTime').value = baseFinishTime.format('HH:mm');
-  document.getElementById('programmeInfo').innerHTML = `
-    <div>⏱ Duration: ${formatDuration(cycleMinutes)}</div>
-    <div>🕒 Immediate finish: ${baseFinishTime.format('HH:mm')}</div>
-  `;
-}
-
+/* When programme selected, compute immediate finish */
 document.querySelectorAll('.programmes button').forEach(btn => {
   btn.onclick = () => {
     document.querySelectorAll('.programmes button').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
 
     cycleMinutes = Number(btn.dataset.minutes);
-    programmeId = btn.dataset.id;
-    setImmediate(cycleMinutes);
+    programmeBtn = btn;
+
+    const now = dayjs();
+    immediateFinish = now.add(cycleMinutes, 'minute');
+
+    /* Update UI immediately */
+    document.getElementById('programmeInfo').innerHTML = `
+      <div class="duration">⏱ Duration: ${formatDuration(cycleMinutes)}</div>
+      <div class="immediate">🕒 Immediate finish: ${immediateFinish.format('HH:mm')}</div>
+      ${btn.dataset.warning ? `<div class="warning">⚠ ${btn.dataset.warning}</div>` : ''}
+    `;
+
+    document.getElementById('finishTime').value = immediateFinish.format('HH:mm');
   };
 });
 
+/* Quick delay buttons now set absolute offsets */
 document.querySelectorAll('.quick-delays button').forEach(btn => {
   btn.onclick = () => {
-    if (!baseFinishTime) return;
+    if (!cycleMinutes || !immediateFinish) return alert('Select a programme first');
     const hours = Number(btn.dataset.add);
-    scheduled.end = baseFinishTime.add(hours, 'hour');
-    renderTimesWithDelay(hours);
+
+    const finish = immediateFinish.add(hours, 'hour');
+    document.getElementById('finishTime').value = finish.format('HH:mm');
   };
 });
 
-function renderTimesWithDelay(hours) {
-  const finish = baseFinishTime.add(hours, 'hour');
-  document.getElementById('finishTime').value = finish.format('HH:mm');
-}
-
+/* Calculate still works */
 document.getElementById('calculate').onclick = () => {
+  if (!cycleMinutes) return alert('Select a programme first');
+
   const now = dayjs();
   const [h, m] = document.getElementById('finishTime').value.split(':');
-  let target = now.hour(h).minute(m);
+  let target = now.hour(h).minute(m).second(0);
+
   if (target.isBefore(now)) target = target.add(1, 'day');
 
-  const delay = [3,6,9].find(d => target.subtract(cycleMinutes, 'minute').subtract(d,'hour').isAfter(now));
+  const bestDelay = [3,6,9].find(d => 
+    target.subtract(cycleMinutes, 'minute').subtract(d, 'hour').isAfter(now)
+  );
 
-  if (!delay) return alert('No valid delay');
+  if (!bestDelay) {
+    document.getElementById('result').innerText = 'No valid delay fits.';
+    return;
+  }
 
-  const start = target.subtract(cycleMinutes, 'minute').subtract(delay, 'hour');
-
-  scheduled.start = start;
-  scheduled.end = target;
+  const start = target.subtract(cycleMinutes, 'minute').subtract(bestDelay, 'hour');
 
   document.getElementById('result').innerText = `
-    Use ${delay}h delay
+    Use ${bestDelay}h delay
     Press at: ${start.format('HH:mm')}
     Finish at: ${target.format('HH:mm')}
   `;
 };
 
-function notifyNow(type, title, body) {
-  if (window.Android) {
-    window.Android.scheduleAlarm(type, dayjs().valueOf(), title, body);
+/* ---------- Browser Notifications (restored) ---------- */
+
+async function ensurePerm() {
+  if (Notification.permission !== 'granted') {
+    await Notification.requestPermission();
   }
 }
 
-document.getElementById('notifyStart').onclick = () =>
-  notifyNow('start', '🧺 Start washing', 'Press delay on machine');
-
-document.getElementById('notifyEnd').onclick = () =>
-  notifyNow('end', '🧺 Washing finished', 'Unload soon');
-
-document.getElementById('notifyWet').onclick = () =>
-  notifyNow('wet', '⚠ Wet clothes', 'Laundry sitting 30 minutes');
-
-document.getElementById('cancelAll').onclick = () => {
-  ['start','end','wet'].forEach(type => {
-    if (window.Android) window.Android.cancelAlarm(type);
-    localStorage.removeItem(`notif_${type}`);
+function fireBrowserNotification(title, body) {
+  if (!("serviceWorker" in navigator)) return alert("No service worker support");
+  navigator.serviceWorker.ready.then(reg => {
+    reg.showNotification(title, { body });
   });
-  document.getElementById('notifStatus').innerText = 'All notifications cleared';
+}
+
+/* Notify start */
+document.getElementById('notifyStart').onclick = async () => {
+  await ensurePerm();
+  if (!cycleMinutes || !immediateFinish) return alert('Select programme first');
+  fireBrowserNotification('🧺 Start washing', `Cycle takes ${formatDuration(cycleMinutes)}`);
+  document.getElementById('notifStatus').innerText = 'Start notification fired';
+};
+
+/* Notify finish */
+document.getElementById('notifyEnd').onclick = async () => {
+  await ensurePerm();
+  if (!cycleMinutes || !immediateFinish) return alert('Select programme first');
+  fireBrowserNotification('🧺 Washing finished', `Finished at ${immediateFinish.format('HH:mm')}`);
+  document.getElementById('notifStatus').innerText = 'Finish notification fired';
+};
+
+/* Wet clothes */
+document.getElementById('notifyWet').onclick = async () => {
+  await ensurePerm();
+  if (!cycleMinutes || !immediateFinish) return alert('Select programme first');
+  const wet = immediateFinish.add(30, 'minute');
+  fireBrowserNotification('⚠ Wet clothes', `Laundry sitting for 30m — original finish ${wet.format('HH:mm')}`);
+  document.getElementById('notifStatus').innerText = 'Wet clothes notification fired';
+};
+
+/* Cancel all */
+document.getElementById('cancelAll').onclick = () => {
+  localStorage.clear();
+  document.getElementById('notifStatus').innerText = 'All notification state cleared';
 };
