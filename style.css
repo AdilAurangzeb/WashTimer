@@ -1,7 +1,16 @@
+:root {
+  --bg: #121212;
+  --card: #1e1e1e;
+  --text: #eee;
+  --accent: #4c8dff;
+  --border: #333;
+  --danger: #e53935;
+}
+
 body {
-  font-family: system-ui;
-  background: #121212;
-  color: #eee;
+  font-family: system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
   padding: 20px;
   color-scheme: dark;
 }
@@ -9,32 +18,15 @@ body {
 .card {
   max-width: 420px;
   margin: auto;
-  background: #1e1e1e;
+  background: var(--card);
   padding: 20px;
   border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
 }
 
-button {
-  padding: 12px;
-  border-radius: 8px;
-  background: transparent;
-  color: inherit;
-  border: 1px solid #333;
-}
-
-button.primary {
-  background: #4c8dff;
-  border: none;
-  color: white;
-  width: 100%;
-  margin-top: 12px;
-}
-
-button.danger {
-  background: #e53935;
-  border: none;
-  width: 100%;
-  margin-top: 12px;
+h2 {
+  font-size: 0.95rem;
+  margin-top: 18px;
 }
 
 .programmes {
@@ -43,18 +35,86 @@ button.danger {
   gap: 8px;
 }
 
+button {
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+button.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+
+button.primary {
+  width: 100%;
+  margin-top: 12px;
+  background: var(--accent);
+  border: none;
+  color: white;
+  font-weight: 600;
+}
+
+button.danger {
+  width: 100%;
+  margin-top: 12px;
+  background: var(--danger);
+  border: none;
+  color: white;
+}
+
 .finish-row {
   display: flex;
   gap: 6px;
+  margin-top: 6px;
+}
+
+input[type="time"] {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+  font-size: 1rem;
+  color-scheme: dark;
 }
 
 .quick-delays button {
-  padding: 8px;
+  padding: 8px 10px;
   font-size: 0.8rem;
+  border-radius: 6px;
+  background: var(--card);
+  border: 1px solid var(--border);
 }
+
+.result {
+  margin-top: 15px;
+  font-weight: 600;
+  white-space: pre-line;
+  font-size: 1rem;
+  padding: 10px;
+  border-radius: 8px;
+  background: var(--card);
+  border-left: 4px solid var(--accent);
+}
+
+.notif-status {
+  margin-top: 10px;
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+
+.notif-status .success { color: #4caf50; }
+.notif-status .warning { color: #ffb74d; }
+.notif-status .error { color: #e53935; }
 
 .notify {
   display: flex;
   gap: 6px;
-  margin-top: 10px;
+  margin-top: 12px;
 }

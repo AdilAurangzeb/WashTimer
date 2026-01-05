@@ -6,15 +6,14 @@
   <title>Wash Timer</title>
 
   <link rel="manifest" href="manifest.json" />
-  <link rel="icon" href="favicon.png" />
+  <link rel="icon" type="image/png" href="favicon.png" />
 
   <link rel="stylesheet" href="style.css" />
   <script src="https://unpkg.com/dayjs@1/dayjs.min.js"></script>
 </head>
-
 <body class="dark">
-<div class="card">
 
+<div class="card">
   <header>
     <h1>🧺 Wash Timer</h1>
     <button id="themeToggle">☀️</button>
@@ -22,13 +21,15 @@
 
   <h2>Programme</h2>
   <div class="programmes">
-    <button data-minutes="195">Cottons 20</button>
-    <button data-minutes="130" data-warning="Max load 3kg">Synthetics 20</button>
-    <button data-minutes="207">Eco 40–60 (7kg)</button>
-    <button data-minutes="161">Eco 40–60 (3.5kg)</button>
+    <button data-id="cottons" data-minutes="195">Cottons 20</button>
+    <button data-id="synthetics" data-minutes="130" data-warning="Max load: 3kg">
+      Synthetics 20
+    </button>
+    <button data-id="eco7" data-minutes="207">Eco 40–60 (7kg)</button>
+    <button data-id="eco35" data-minutes="161">Eco 40–60 (3.5kg)</button>
   </div>
 
-  <div id="programmeInfo"></div>
+  <div id="programmeInfo" class="programme-info"></div>
 
   <h2>Finish time</h2>
   <div class="finish-row">
@@ -42,7 +43,7 @@
 
   <button id="calculate" class="primary">Calculate</button>
 
-  <div id="result"></div>
+  <div id="result" class="result"></div>
 
   <div class="notify">
     <button id="notifyStart">Notify start</button>
@@ -52,6 +53,7 @@
 
   <button id="cancelAll" class="danger">Cancel all notifications</button>
 
+  <div id="notifStatus" class="notif-status"></div>
 </div>
 
 <script src="app.js"></script>

@@ -1,9 +1,9 @@
 {
   "name": "Wash Timer",
   "short_name": "WashTimer",
-  "start_url": ".",
+  "start_url": "/",
   "display": "standalone",
-  "background_color": "#223442",
+  "background_color": "#121212",
   "theme_color": "#223442",
   "icons": [
     { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
